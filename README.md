@@ -1,46 +1,76 @@
 # DataGuard
 
-**Know exactly when you run out.**
+**知道你的流量还剩多少，以及什么时候会用完。**
 
-A data usage dashboard that tells you not how much you've used, but **how much you have left** — and when it ends.
+运营商给你的只是一个数字。DataGuard 给你的是一种**掌控感**。
 
 ---
 
-## What It Does
+## 这是什么
 
-- **Scrapes** CSL portal every 6 hours
-- **Predicts** days until data exhaustion
-- **Warns** before you hit zero
+一个**自己搭的、全自动的**数据用量监控系统。
 
-## Stack
+它用 AI（Playwright 无头浏览器）模拟人类登录运营商门户，爬取你的实时用量数据，然后用一个精心设计的仪表盘把"剩余量"和"耗尽时间"可视化出来。
 
-| Layer | Tech |
-|-------|------|
-| Frontend | HTML + CSS + JS (single file, zero deps) |
-| Scraper | Python + Playwright |
-| Scheduler | GitHub Actions |
-| Hosting | GitHub Pages (free, forever) |
-
-No React. No build step. No maintenance.
-
-## Deploy
-
-```bash
-# 1. Fork this repo
-# 2. Add secrets: CSL_USER, CSL_PASS
-# 3. Enable GitHub Pages from /docs
-# 4. Trigger workflow once
+```
+运营商 Portal → AI 爬虫 → JSON 数据 → 可视化看板
+                 (Playwright)          (纯前端)
 ```
 
-Live at `https://YOUR_NAME.github.io/csl-usage`
-
-## Why This Exists
-
-Most data apps tell you consumption.  
-**DataGuard tells you scarcity.**
-
-Scarcity drives action. Consumption drives nothing.
+不是 SaaS，不是订阅。**就是你自己写的一个工具，跑在 GitHub 上，永远免费。**
 
 ---
 
-MIT
+## 谁适合用
+
+- 用预付卡 / 限流量套餐的人
+- 不想装 App、不想被通知轰炸、只想打开网页看一眼的人
+- 对"我的数据归我管"有执念的人
+- 想看看 AI + 可视化能怎么融入日常生活的人
+
+> 本质上，这和智能家居是一个逻辑：  
+> 传感器（爬虫）→ 数据管道 → 仪表盘。  
+> 只不过你监控的不是温度或电量，而是**你的网络流量**。
+
+---
+
+## 怎么工作的
+
+| 层 | 做什么 | 技术 |
+|---|---|---|
+| **爬虫** | 每天4次自动登录 portal，拉取用量 | Python + Playwright |
+| **调度** | GitHub 服务器定时触发，不需要你电脑开机 | GitHub Actions (cron) |
+| **存储** | 每次抓取追加一条 JSON 历史记录 | Git 版本管理 |
+| **前端** | 打开网页就看，手机/桌面自适应 | 纯 HTML + CSS + JS |
+| **托管** | 全球 CDN，零费用 | GitHub Pages |
+
+登录凭证存在 GitHub Secrets 里，代码里看不到，仓库公开也不怕。
+
+---
+
+## 关键设计
+
+- **显示剩余量，不是已用量**。就像油表显示剩余油量一样。
+- **预测耗尽天数**。AI 算你的日均消耗，告诉你"按这个速度还能用 X 天"。
+- **三色预警**。 >30GB 绿 / 10-30GB 黄 / <10GB 红，紧迫感随余量递减递增。
+- **余量趋势图**。Sparkline 曲线，一眼看出消耗速度在变快还是变慢。
+
+---
+
+## 部署
+
+```bash
+# 1. Fork 这个仓库
+# 2. 加两个 Secrets: CSL_USER (手机号), CSL_PASS (密码)
+# 3. 打开 GitHub Pages（/docs 目录）
+# 4. 手动触发一次工作流
+```
+
+之后每6小时自动运行，你只管打开 `你的用户名.github.io/csl-usage` 看。
+
+---
+
+## 一句话
+
+**这不是一个查流量的工具。**  
+**这是一个让你对自己数字生活保持掌控的仪表盘。**
