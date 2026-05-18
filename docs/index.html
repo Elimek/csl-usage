@@ -13,8 +13,8 @@
   --bg: #f5f3f0;
   --card: #ffffff;
   --border: #e8e3dc;
-  --shadow: 0 1px 2px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.02);
-  --shadow-hover: 0 1px 2px rgba(0,0,0,0.03), 0 12px 40px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+  --shadow-hover: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.06);
   --text: #1c1917;
   --text2: #787168;
   --text3: #a39b92;
@@ -28,16 +28,16 @@
 }
 
 html, body {
-  height:100%;overflow:hidden;
-  font-family:'Inter',-apple-system,sans-serif;
+  height:100%;
+  font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;
   background:var(--bg);color:var(--text);
   display:flex;justify-content:center;align-items:center;
 }
 
-.main {
-  width:92vw;max-width:1120px;
-  height:88dvh;max-height:800px;
-  display:flex;flex-direction:column;gap:10px;
+/* 桌面端: 固定高度无滚动 */
+@media(min-width:641px){
+  html,body{overflow:hidden}
+  .main{width:92vw;max-width:1120px;height:88vh;max-height:800px;display:flex;flex-direction:column;gap:10px}
 }
 
 /* ─── header ─── */
@@ -67,8 +67,13 @@ html, body {
 /* ─── kanban ─── */
 .kanban{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:640px){
-  html,body{overflow-y:auto}
-  .main{width:96vw;height:auto;min-height:100dvh;max-height:none;gap:8px;padding:10px 0}
+  html,body{
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  html{height:auto;min-height:100%}
+  body{height:auto;min-height:100vh;padding:10px 0;align-items:flex-start}
+  .main{width:96vw;height:auto;min-height:auto;max-height:none;display:flex;flex-direction:column;gap:8px;max-width:100%}
   .kanban{flex:none;grid-template-columns:1fr;gap:8px}
   .card{padding:14px 14px 12px}
   .card .hero{padding:4px 0 2px}
