@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSL DataGuard · 数据余量智能监控</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg: #f5f3f0;
+  --card: #ffffff;
+  --border: #e8e3dc;
+  --shadow: 0 1px 2px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.02);
+  --shadow-hover: 0 1px 2px rgba(0,0,0,0.03), 0 12px 40px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+  --text: #1c1917;
+  --text2: #787168;
+  --text3: #a39b92;
+  --safe: #22c55e;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --track: #ded7cf;
+  --safe-bg: rgba(34,197,94,0.06);
+  --warn-bg: rgba(245,158,11,0.06);
+  --danger-bg: rgba(239,68,68,0.06);
+}
+
+html, body {
+  height:100%;overflow:hidden;
+  font-family:'Inter',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  display:flex;justify-content:center;align-items:center;
+}
+
+.main {
+  width:92vw;max-width:1120px;
+  height:88vh;max-height:800px;
+  display:flex;flex-direction:column;gap:10px;
+}
+
+/* ─── header ─── */
+.header {
+  flex-shrink:0;background:var(--card);
+  border:1px solid var(--border);border-radius:16px;
+  padding:14px 22px;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:space-between;
+}
+
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{
+  width:32px;height:32px;border-radius:10px;
+  background:linear-gradient(135deg,#1c1917,#44403c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#fff
+}
+.brand h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.brand .ver{font-size:10px;color:var(--text3);font-weight:400;background:#f0ede8;padding:1px 6px;border-radius:6px;margin-left:4px}
+
+.head-right{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--text2)}
+.upd-badge{display:flex;align-items:center;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--safe);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ─── kanban ─── */
+.kanban{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:640px){.kanban{grid-template-columns:1fr}.main{width:96vw;height:94vh}}
+
+/* ─── card ─── */
+.card {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:20px 22px 16px;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;position:relative;
+  transition:box-shadow .3s, border-color .3s, transform .2s;
+}
+.card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+
+.card.st-warn{border-color:rgba(245,158,11,0.2)}
+.card.st-danger{border-color:rgba(239,68,68,0.2)}
+.card.st-danger .card-header::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--danger),transparent);border-radius:16px 16px 0 0}
+
+/* ─── header row ─── */
+.card-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:4px;position:relative;
+}
+.card-header .icon{font-size:18px}
+.card-header .ttl{font-size:14px;font-weight:600}
+.card-header .sub{font-size:11px;color:var(--text3);margin-left:auto}
+
+.st-tag{
+  position:absolute;top:0;right:0;
+  padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:600;letter-spacing:.3px;
+  display:flex;align-items:center;gap:4px;
+}
+.st-safe .st-tag{background:var(--safe-bg);color:var(--safe)}
+.st-warn .st-tag{background:var(--warn-bg);color:var(--warn)}
+.st-danger .st-tag{background:var(--danger-bg);color:var(--danger)}
+.st-dot{width:5px;height:5px;border-radius:50%}
+.bg-sf{background:var(--safe)}
+.bg-wn{background:var(--warn)}
+.bg-dg{background:var(--danger)}
+
+/* ─── hero section ─── */
+.hero{
+  display:flex;align-items:baseline;justify-content:center;gap:6px;
+  padding:10px 0 4px;flex-shrink:0;
+}
+.hero .big{
+  font-family:'JetBrains Mono',monospace;
+  font-size:52px;font-weight:700;line-height:1;letter-spacing:-2px;
+}
+.hero .big .u{font-size:20px;font-weight:500;font-family:Inter;margin-left:2px}
+.hero .hlp{font-size:12px;color:var(--text3);margin-left:4px}
+
+.c-sf{color:var(--safe)}
+.c-wn{color:var(--warn)}
+.c-dg{color:var(--danger)}
+.bg-sf{background:var(--safe)}
+.bg-wn{background:var(--warn)}
+.bg-dg{background:var(--danger)}
+
+/* ─── progress bar ─── */
+.pr-section{padding:4px 0 2px;flex-shrink:0}
+.pr-bar{width:100%;height:12px;background:var(--track);border-radius:99px;overflow:hidden;position:relative}
+.pr-bar .fill{
+  height:100%;border-radius:99px;
+  transition:width 1.4s cubic-bezier(.22,1,.36,1);
+}
+.st-safe .pr-bar .fill{background:linear-gradient(90deg,#22c55e,#4ade80)}
+.st-warn .pr-bar .fill{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.st-danger .pr-bar .fill{background:linear-gradient(90deg,#ef4444,#f87171)}
+
+.pr-meta{display:flex;justify-content:space-between;margin-top:3px;font-size:11px;color:var(--text3)}
+.pr-meta .l{color:var(--text2)}
+
+/* ─── prediction ─── */
+.prediction{
+  display:flex;align-items:center;gap:12px;
+  padding:6px 0 2px;flex-shrink:0;
+  font-size:12px;
+}
+.pred .tag{
+  font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  padding:2px 8px;border-radius:6px;
+}
+.st-safe .pred .tag{background:var(--safe-bg);color:var(--safe)}
+.st-warn .pred .tag{background:var(--warn-bg);color:var(--warn)}
+.st-danger .pred .tag{background:var(--danger-bg);color:var(--danger)}
+.pred .msg{color:var(--text2)}
+.pred .msg strong{color:var(--text)}
+
+/* ─── sparkline ─── */
+.spark-wrap{
+  flex-shrink:0;padding:4px 0 0;margin-top:auto;
+}
+.spark-wrap svg{width:100%;height:32px;display:block}
+.spark-wrap .spark-labels{
+  display:flex;justify-content:space-between;
+  font-size:9px;color:var(--text3);margin-top:-2px;
+}
+
+/* ─── footer ─── */
+.card-ft{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:8px;padding-top:10px;
+  border-top:1px solid rgba(0,0,0,0.04);
+  font-size:11px;color:var(--text3);flex-shrink:0;
+}
+.card-ft .ft-r{font-weight:500}
+
+/* ─── history ─── */
+.hist{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.hist-row{display:grid;grid-template-columns:70px 1fr 1fr;padding:4px 14px;font-size:11px;border-bottom:1px solid rgba(0,0,0,0.02);align-items:center}
+.hist-row:last-child{border-bottom:none}
+.hist-row.hd{font-size:9px;font-weight:600;letter-spacing:.3px;color:var(--text3);background:rgba(0,0,0,.008);padding:3px 14px}
+.hist-row .ct{font-family:'JetBrains Mono',monospace;color:var(--text2);font-size:10px}
+.hist-row .cv{font-family:'JetBrains Mono',monospace;font-size:10px;text-align:right;font-weight:500}
+
+/* ─── loading ─── */
+.loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text3);font-size:13px;background:var(--bg)}
+.loading .sp{width:28px;height:28px;border:2.5px solid rgba(0,0,0,0.06);border-top-color:var(--text2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading"><div class="sp"></div><div>加载智能监控...</div></div>
+</div>
+
+<script>
+const HP = 'data/history.json';
+
+async function load(){
+  try{
+    const r=await fetch(HP+'?t='+Date.now());
+    render(await r.json());
+  }catch(e){
+    document.getElementById('app').innerHTML=`<div class="loading"><div>⚠️ ${e.message}</div></div>`;
+  }
+}
+
+function st(rem){
+  if(rem<10) return {c:'#ef4444',cl:'dg',lb:'紧急',c2:'danger'};
+  if(rem<30) return {c:'#f59e0b',cl:'wn',lb:'注意',c2:'warn'};
+  return {c:'#22c55e',cl:'sf',lb:'充裕',c2:'safe'};
+}
+
+// 绘制 sparkline SVG
+function sparkline(vals,color){
+  if(!vals||vals.length<2)return'';
+  const w=280,h=32,pad=4;
+  const max=Math.max(...vals)+5,min=Math.min(...vals)-5;
+  const range=max-min;
+  const xs=vals.map((_,i)=>pad+(i/(vals.length-1))*(w-pad*2));
+  const ys=vals.map(v=>h-pad-((v-min)/range)*(h-pad*2));
+  const d=xs.map((x,i)=>`${i===0?'M':'L'}${x.toFixed(0)},${ys[i].toFixed(0)}`).join('');
+  const area=xs.map((x,i)=>`${i===0?'M':'L'}${x.toFixed(0)},${ys[i].toFixed(0)}`).join('')+`L${xs[xs.length-1].toFixed(0)},${h-pad}L${xs[0].toFixed(0)},${h-pad}Z`;
+  return `
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:32px">
+      <defs><linearGradient id="spark-${color}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity=".15"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity=".01"/>
+      </linearGradient></defs>
+      <path d="${area}" fill="url(#spark-${color})" opacity=".6"/>
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>
+      <circle cx="${xs[xs.length-1].toFixed(0)}" cy="${ys[ys.length-1].toFixed(0)}" r="3" fill="${color}"/>
+    </svg>`;
+}
+
+function render(h){
+  if(!h||!h.length){document.getElementById('app').innerHTML='<div class="loading"><div>暂无数据</div></div>';return}
+
+  const last=h[h.length-1];
+  let plans=(last.plans||[]).filter(p=>p.type==='data');
+  plans.sort((a,b)=>(a.name.includes('午夜')||a.name.includes('23:00')?1:0)-(b.name.includes('午夜')||b.name.includes('23:00')?1:0));
+
+  let html='<div class="main">';
+
+  // header
+  html+=`<div class="header">
+    <div class="brand">
+      <div class="brand-icon">📡</div>
+      <h1>DataGuard <span class="ver">v1.0</span></h1>
+    </div>
+    <div class="head-right">
+      <span class="upd-badge"><span class="dot"></span>${last.timestamp||'--'}</span>
+    </div>
+  </div>`;
+
+  // kanban
+  html+='<div class="kanban">';
+  for(const p of plans){
+    const tot=p.total_gb||100;
+    const used=p.used_gb||0;
+    const rem=tot-used;
+    const usedPct=(used/tot)*100;
+    const s=st(rem);
+    const isNight=p.name.includes('午夜')||p.name.includes('23:00');
+    const icon=isNight?'🌙':'☀️';
+    const tTag=isNight?'23:00-07:00':'07:01-22:59';
+    const ttl=isNight?'午夜快線':'日間數據';
+
+    // 计算日均消耗 & 预测
+    let dailyAvg=null,predictDays=null;
+    if(h.length>=2){
+      // 找这个计划的最近两个数据点
+      const thisPlanHistory=[];
+      for(const x of h){
+        const match=(x.plans||[]).find(xp=>xp.type==='data'&&(
+          (isNight&&(xp.name.includes('午夜')||xp.name.includes('23:00')))||
+          (!isNight&&!xp.name.includes('午夜')&&!xp.name.includes('23:00'))
+        ));
+        if(match) thisPlanHistory.push({ts:x.timestamp,used:match.used_gb||0});
+      }
+      if(thisPlanHistory.length>=2){
+        const first=thisPlanHistory[0],lastP=thisPlanHistory[thisPlanHistory.length-1];
+        const t1=new Date(first.ts.replace(' ','T')+'+08:00');
+        const t2=new Date(lastP.ts.replace(' ','T')+'+08:00');
+        const hours=(t2-t1)/(1000*60*60);
+        if(hours>0){
+          const consumed=lastP.used-first.used;
+          dailyAvg=+(consumed/hours*24).toFixed(2);
+          if(dailyAvg>0) predictDays=Math.max(0,+(rem/dailyAvg).toFixed(1));
+        }
+      }
+    }
+
+    // 收集 sparkline 数据
+    const sparkData=[];
+    for(const x of h){
+      const match=(x.plans||[]).find(xp=>xp.type==='data'&&(
+        (isNight&&(xp.name.includes('午夜')||xp.name.includes('23:00')))||
+        (!isNight&&!xp.name.includes('午夜')&&!xp.name.includes('23:00'))
+      ));
+      if(match) sparkData.push(+(tot-(match.used_gb||0)).toFixed(1));
+    }
+
+    const sparkHtml=sparkline(sparkData,s.c);
+
+    html+=`<div class="card st-${s.c2}">
+      <div class="st-tag"><span class="st-dot bg-${s.cl}"></span>${s.lb}</div>
+      <div class="card-header">
+        <span class="icon">${icon}</span>
+        <span class="ttl">${ttl}</span>
+        <span class="sub">${tTag} · ${tot} GB</span>
+      </div>
+
+      <div class="hero">
+        <span class="big c-${s.cl}">${rem.toFixed(1)}<span class="u">GB</span></span>
+        <span class="hlp">剩余</span>
+      </div>
+
+      <div class="pr-section">
+        <div class="pr-bar"><div class="fill" style="width:${usedPct.toFixed(0)}%"></div></div>
+        <div class="pr-meta">
+          <span class="l">已用 ${used.toFixed(1)} GB</span>
+          <span>${usedPct.toFixed(0)}% · 日均 ${dailyAvg||'--'} GB</span>
+        </div>
+      </div>
+
+      <div class="prediction">
+        <div class="pred"><span class="tag">预测</span></div>
+        <div class="pred">${predictDays!==null
+          ? `<span class="msg">按当前速度，约 <strong>${predictDays}</strong> 天后数据耗尽</span>`
+          : '<span class="msg">等待更多数据后提供消耗预测</span>'}
+        </div>
+      </div>
+
+      ${sparkHtml
+        ? `<div class="spark-wrap">${sparkHtml}<div class="spark-labels"><span>${(h[0].timestamp||'').slice(5,10)}</span><span>${(last.timestamp||'').slice(5,10)}</span></div></div>`
+        : ''}
+
+      <div class="card-ft">
+        <span>📦 ${tot} GB</span>
+        <span>📅 ${p.expiry||'--'}</span>
+        <span class="ft-r c-${s.cl}">● 剩余 ${rem.toFixed(1)} GB</span>
+      </div>
+    </div>`;
+  }
+  html+='</div>';
+
+  // history
+  if(h.length>=2){
+    html+='<div class="hist">';
+    html+='<div class="hist-row hd"><span>时间</span><span style="text-align:right">☀️ 日间剩余</span><span style="text-align:right">🌙 午夜剩余</span></div>';
+    const rows=[...h].reverse().slice(0,4);
+    for(const x of rows){
+      const ts=(x.timestamp||'').slice(5,16);
+      const ps=(x.plans||[]).filter(p=>p.type==='data');
+      const day=ps.find(p=>!p.name.includes('午夜')&&!p.name.includes('23:00'));
+      const night=ps.find(p=>p.name.includes('午夜')||p.name.includes('23:00'));
+      const dr=day?((day.total_gb||100)-(day.used_gb||0)).toFixed(1):'--';
+      const nr=night?((night.total_gb||100)-(night.used_gb||0)).toFixed(1):'--';
+      const ds=day?st((day.total_gb||100)-(day.used_gb||0)):{cl:''};
+      const ns=night?st((night.total_gb||100)-(night.used_gb||0)):{cl:''};
+      html+=`<div class="hist-row">
+        <span class="ct">${ts}</span>
+        <span class="cv c-${ds.cl}">${dr} GB</span>
+        <span class="cv c-${ns.cl}">${nr} GB</span>
+      </div>`;
+    }
+    html+='</div>';
+  }
+
+  html+='</div>';
+  document.getElementById('app').innerHTML=html;
+}
+
+load();
+</script>
+</body>
+</html>

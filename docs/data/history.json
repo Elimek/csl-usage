@@ -1,0 +1,34 @@
+[
+  {
+    "timestamp": "2026-05-17 18:00:00",
+    "phone": "59985735",
+    "plans": [
+      {"type": "data", "name": "任用數據/60日: 午夜快線本地數據(23:00-07:00; 100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 72.15, "unit": "GB", "expiry": "2026-06-26"},
+      {"type": "data", "name": "任用數據/60日: (100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 84.3, "unit": "GB", "expiry": "2026-06-26"}
+    ]
+  },
+  {
+    "timestamp": "2026-05-18 00:00:00",
+    "phone": "59985735",
+    "plans": [
+      {"type": "data", "name": "任用數據/60日: 午夜快線本地數據(23:00-07:00; 100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 73.5, "unit": "GB", "expiry": "2026-06-26"},
+      {"type": "data", "name": "任用數據/60日: (100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 85.2, "unit": "GB", "expiry": "2026-06-26"}
+    ]
+  },
+  {
+    "timestamp": "2026-05-18 07:49:00",
+    "phone": "59985735",
+    "plans": [
+      {"type": "data", "name": "任用數據/60日: 午夜快線本地數據(23:00-07:00; 100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 74.93, "unit": "GB", "expiry": "2026-06-26"},
+      {"type": "data", "name": "任用數據/60日: (100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 86.66, "unit": "GB", "expiry": "2026-06-26"}
+    ]
+  },
+  {
+    "timestamp": "2026-05-18 08:04:16",
+    "phone": "59985735",
+    "plans": [
+      {"type": "data", "name": "任用數據/60日: 午夜快線本地數據(23:00-07:00; 100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 74.93, "unit": "GB", "expiry": "2026-06-26"},
+      {"type": "data", "name": "任用數據/60日: (100GB@42Mbps, 其後512kbps) (每60天自動更新)", "total_gb": 100, "used_gb": 86.68, "unit": "GB", "expiry": "2026-06-26"}
+    ]
+  }
+]
