@@ -5924,5 +5924,47 @@
         "expiry": "预付卡到期日"
       }
     ]
+  },
+  {
+    "timestamp": "2026-06-23 04:54:42",
+    "phone": "59985735",
+    "balance_hkd": 68,
+    "expiry_date": "2027-06-02",
+    "status": "有效",
+    "registered": "已实名登记",
+    "plans": [
+      {
+        "type": "data",
+        "name": "任用數據/60日: 午夜快線本地數據(23:00-07:00; 100GB@42Mbps, 其後512kbps) (每60天自動更新)",
+        "total_gb": 100,
+        "used_gb": 19.44,
+        "remaining_gb": null,
+        "unit": "GB",
+        "expiry": "2026-08-01"
+      },
+      {
+        "type": "data",
+        "name": "任用數據/60日: (100GB@42Mbps, 其後512kbps) (每60天自動更新)",
+        "total_gb": 100,
+        "used_gb": 33.95,
+        "remaining_gb": null,
+        "unit": "GB",
+        "expiry": "2026-08-01"
+      },
+      {
+        "type": "voice",
+        "name": "香港通话",
+        "remaining": 10000,
+        "unit": "分钟",
+        "expiry": "2026-08-01 03:45:00"
+      },
+      {
+        "type": "voice",
+        "name": "本地通話(網外/網內)",
+        "remaining": 6197,
+        "unit": "分钟",
+        "expiry": "预付卡到期日"
+      }
+    ]
   }
 ]
