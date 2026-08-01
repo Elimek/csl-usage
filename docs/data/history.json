@@ -12450,5 +12450,22 @@
         "expiry": "预付卡到期日"
       }
     ]
+  },
+  {
+    "timestamp": "2026-08-01 21:38:06",
+    "phone": "59985735",
+    "balance_hkd": 68,
+    "expiry_date": "2027-06-02",
+    "status": "有效",
+    "registered": "已实名登记",
+    "plans": [
+      {
+        "type": "voice",
+        "name": "本地通話(網外/網內)",
+        "remaining": 6197,
+        "unit": "分钟",
+        "expiry": "预付卡到期日"
+      }
+    ]
   }
 ]
